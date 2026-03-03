@@ -13,9 +13,7 @@ import Grid from "@mui/material/Grid"
 import TextField from "@mui/material/TextField"
 import {Controller, type SubmitHandler, useForm} from "react-hook-form"
 import styles from "./Login.module.css"
-import {loginTC, selectIsLoggedIn} from "@/features/auth/model/auth-slice.ts";
-import {Navigate} from "react-router";
-import {Path} from "@/common/routing";
+import {loginTC} from "@/features/auth/model/auth-slice.ts";
 
 export const Login = () => {
   const themeMode = useAppSelector(selectThemeMode)
@@ -37,7 +35,7 @@ export const Login = () => {
     formState: { errors },
   } = useForm<LoginInputs>({
     resolver: zodResolver(loginSchema),
-    defaultValues: { email: "kim_752@mail.ru", password: "17252706esiya", rememberMe: false },
+    defaultValues: { email: "", password: "", rememberMe: false },
   })
 
 

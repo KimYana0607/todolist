@@ -1,9 +1,10 @@
 import { styled } from "@mui/material/styles"
-import Button from "@mui/material/Button"
+import Button, {ButtonProps} from "@mui/material/Button"
+import {LinkProps} from "react-router";
 
-type Props = {
+type Props = ButtonProps & {
   background?: string
-}
+}  & Partial<LinkProps>
 
 export const NavButton = styled(Button)<Props>(({ background, theme }) => ({
   minWidth: "110px",
