@@ -1,2 +1,2 @@
-export { DomainTodolist } from "./types.ts"
-export { FilterValues } from "./types.ts"
+export type { DomainTodolist } from "./types.ts"
+export type { FilterValues } from "./types.ts"

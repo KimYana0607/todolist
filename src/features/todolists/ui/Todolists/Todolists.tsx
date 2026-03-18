@@ -2,7 +2,6 @@ import Grid from "@mui/material/Grid"
 import Paper from "@mui/material/Paper"
 import {TodolistItem} from "./TodolistItem/TodolistItem"
 import {useGetTodolistsQuery} from "@/features/todolists/api/todolistsApi.ts";
-import {Skeleton} from "@mui/material";
 import {TodolistSkeleton} from "@/features/todolists/ui/Todolists/TodolistSkeleton/TodolistSkeleton.tsx";
 import {containerSx} from "@/common/styles";
 import Box from "@mui/material/Box";
