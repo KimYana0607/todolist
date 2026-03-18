@@ -1,29 +1,35 @@
 import "./App.module.css"
-import {selectThemeMode} from "@/app/app-slice"
+import {selectThemeMode, setIsLoggedInAC} from "@/app/app-slice"
 import {ErrorSnackbar, Header} from "@/common/components"
 import {useAppDispatch, useAppSelector} from "@/common/hooks"
 import {Routing} from "@/common/routing"
 import {getTheme} from "@/common/theme"
 import CssBaseline from "@mui/material/CssBaseline"
 import {ThemeProvider} from "@mui/material/styles"
-import {meTC} from "@/features/auth/model/auth-slice.ts";
 import {useEffect, useState} from "react";
 import {CircularProgress} from "@mui/material";
 import s from '../app/App.module.css'
+import {useMeQuery} from "@/features/todolists/api/authApi.ts";
+import {ResultCode} from "@/common/enums";
 
 export const App = () => {
 
     const [init, setInit] = useState(false)
     const themeMode = useAppSelector(selectThemeMode)
+
+    const {data, isLoading} = useMeQuery()
+
     const theme = getTheme(themeMode)
 
     const dispatch = useAppDispatch()
 
     useEffect(() => {
-        dispatch(meTC()).finally(() => {
-            setInit(true)
-        })
-    }, [])
+        if (isLoading) return
+        if (data?.resultCode === ResultCode.Success) {
+            dispatch(setIsLoggedInAC({isLoggedIn: true}))
+        }
+        setInit(true)
+    }, [isLoading]);
 
     if (!init) {
         return (

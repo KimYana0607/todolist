@@ -1,4 +1,10 @@
-import {changeThemeModeAC, selectAppStatus, selectThemeMode} from "@/app/app-slice.ts"
+import {
+    changeThemeModeAC,
+    selectAppStatus,
+    selectEmail,
+    selectIsLoggedIn,
+    selectThemeMode, setIsLoggedInAC,
+} from "@/app/app-slice.ts"
 import {useAppDispatch, useAppSelector} from "@/common/hooks"
 import {containerSx} from "@/common/styles"
 import {getTheme} from "@/common/theme"
@@ -10,16 +16,19 @@ import IconButton from "@mui/material/IconButton"
 import Switch from "@mui/material/Switch"
 import Toolbar from "@mui/material/Toolbar"
 import LinearProgress from "@mui/material/LinearProgress"
-import {logoutTC, selectEmail, selectIsLoggedIn} from "@/features/auth/model/auth-slice.ts";
 import {Link} from "react-router";
 import {Path} from "@/common/routing";
+import {useLogoutMutation} from "@/features/todolists/api/authApi.ts";
+import {ResultCode} from "@/common/enums";
+import {AUTH_TOKEN} from "@/common/constants";
+import {baseApi} from "@/app/baseApi.ts";
 
 export const Header = () => {
     const themeMode = useAppSelector(selectThemeMode)
     const status = useAppSelector(selectAppStatus)
     const isLoggedIn = useAppSelector(selectIsLoggedIn)
     const email = useAppSelector(selectEmail)
-
+    const [logout] = useLogoutMutation()
     const dispatch = useAppDispatch()
 
     const theme = getTheme(themeMode)
@@ -29,7 +38,16 @@ export const Header = () => {
     }
 
     const logoutHandler = () => {
-        dispatch(logoutTC())
+        logout().unwrap().then((res)=>{
+            if (res.resultCode === ResultCode.Success) {
+                dispatch(setIsLoggedInAC({isLoggedIn: false}))
+                localStorage.removeItem(AUTH_TOKEN)
+            }
+        })
+            .then(()=>{
+                // dispatch(baseApi.util.resetApiState())
+                dispatch(baseApi.util.invalidateTags(["Tasks", "Todolists"]))
+            })
     }
 
 
@@ -42,12 +60,10 @@ export const Header = () => {
                     </IconButton>
                     <div>
                         {isLoggedIn && <>
-                            <span>{`${email}`}</span>
+                            <span>{email}</span>
                             <NavButton onClick={logoutHandler}>Logout</NavButton>
                         </>
                     }
-
-
                         <NavButton
                             component={Link}
                             to={Path.FAQ}

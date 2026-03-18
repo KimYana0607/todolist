@@ -4,7 +4,7 @@ import {Login} from "@/features/auth/ui/Login/Login"
 import {Route, Routes} from "react-router"
 import {FAQ} from '@/app/FAQ.tsx'
 import {useAppSelector} from "@/common/hooks";
-import {selectIsLoggedIn} from "@/features/auth/model/auth-slice.ts";
+import {selectIsLoggedIn} from "@/app/app-slice.ts";
 
 export const Path = {
     Main: "/",
