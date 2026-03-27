@@ -3,13 +3,9 @@ import DeleteIcon from "@mui/icons-material/Delete"
 import IconButton from "@mui/material/IconButton"
 import styles from "./TodolistTitle.module.css"
 import {
-    todolistsApi,
     useChangeTodolistTitleMutation,
     useDeleteTodolistMutation
 } from "@/features/todolists/api/todolistsApi.ts";
-import {useAppDispatch} from "@/common/hooks";
-import {ResultCode} from "@/common/enums";
-import {RequestStatus} from "@/common/types";
 import {DomainTodolist} from "@/features/auth/lib/types";
 
 type Props = {
@@ -17,33 +13,11 @@ type Props = {
 }
 
 export const TodolistTitle = ({todolist}: Props) => {
-    const {id, title, entityStatus} = todolist
+    const {id, title} = todolist
 
-    const dispatch = useAppDispatch()
     const [deleteTodolist] = useDeleteTodolistMutation()
     const [changeTodolistTitle] = useChangeTodolistTitleMutation()
-
-    const changeEntityStatus = (entityStatus: RequestStatus)=>{
-        dispatch(
-            todolistsApi.util.updateQueryData('getTodolists', undefined, (response) => {
-                const todolist = response.find((todolist) => todolist.id === id)
-                if (todolist) {
-                    todolist.entityStatus = entityStatus
-                }
-            }),
-        )
-    }
-    const deleteTodolistHandler = () => {
-        changeEntityStatus('loading')
-        deleteTodolist(id).unwrap().then((data) => {
-            if (data.resultCode === ResultCode.Error) {
-                changeEntityStatus('failed')
-            }
-        })
-            .catch(() => {
-                changeEntityStatus('failed')
-            })
-    }
+    const deleteTodolistHandler = () => deleteTodolist(id)
 
     const changeTodolistTitleHandler = (title: string) => {
         changeTodolistTitle({id, title})
@@ -54,9 +28,10 @@ export const TodolistTitle = ({todolist}: Props) => {
             <h3>
                 <EditableSpan value={title} onChange={changeTodolistTitleHandler}/>
             </h3>
-            <IconButton onClick={deleteTodolistHandler} disabled={entityStatus === "loading"}>
+            <IconButton onClick={deleteTodolistHandler}>
                 <DeleteIcon/>
             </IconButton>
         </div>
     )
 }
+

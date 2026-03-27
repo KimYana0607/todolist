@@ -44,8 +44,6 @@ export const TaskItem = ({task, todolist}: Props) => {
         updateTaskHandler({ title });
     };
     const deleteTaskHandler = async () => {
-        console.log("task exists?", task)
-        console.log("taskId:", task.id)
         await deleteTask({
             todolistId: todolist.id,
             taskId: task.id

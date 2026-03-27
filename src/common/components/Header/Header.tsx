@@ -38,14 +38,14 @@ export const Header = () => {
     }
 
     const logoutHandler = () => {
-        logout().unwrap().then((res)=>{
-            if (res.resultCode === ResultCode.Success) {
+        logout()
+            .then((res)=>{
+            if (res.data?.resultCode === ResultCode.Success) {
                 dispatch(setIsLoggedInAC({isLoggedIn: false}))
                 localStorage.removeItem(AUTH_TOKEN)
             }
         })
             .then(()=>{
-                // dispatch(baseApi.util.resetApiState())
                 dispatch(baseApi.util.invalidateTags(["Tasks", "Todolists"]))
             })
     }

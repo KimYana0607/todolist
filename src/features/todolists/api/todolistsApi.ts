@@ -33,10 +33,20 @@ export const todolistsApi = baseApi.injectEndpoints({
             invalidatesTags: ['Todolists'],
         }),
         deleteTodolist: build.mutation<BaseResponse, string>({
-            query: (id) => {
-                return {
-                    method: 'DELETE',
-                    url: `/todo-lists/${id}`
+            query: (id) => ({method: 'DELETE', url: `/todo-lists/${id}`}),
+            onQueryStarted: async (id, {dispatch, queryFulfilled})=>{
+                const patchResult = dispatch(
+                    todolistsApi.util.updateQueryData('getTodolists', undefined, (todolists: DomainTodolist[]) => {
+                        const index = todolists.findIndex((todo) => todo.id === id)
+                        if (index !== -1) {
+                            todolists.splice(index, 1)
+                        }
+                    }),
+                )
+                try {
+                    await queryFulfilled
+                } catch (e) {
+                    patchResult.undo()
                 }
             },
             invalidatesTags: ['Todolists'],
@@ -50,20 +60,3 @@ export const {
     useChangeTodolistTitleMutation,
     useDeleteTodolistMutation
 } = todolistsApi
-
-
-// export const todolistsApi = {
-//   getTodolists() {
-//     return instance.get<Todolist[]>("/todo-lists")
-//   },
-//   changeTodolistTitle(payload: { id: string; title: string }) {
-//     const { id, title } = payload
-//     return instance.put<BaseResponse>(`/todo-lists/${id}`, { title })
-//   },
-//   createTodolist(title: string) {
-//     return instance.post<BaseResponse<{ item: Todolist }>>("/todo-lists", { title })
-//   },
-//   deleteTodolist(id: string) {
-//     return instance.delete<BaseResponse>(`/todo-lists/${id}`)
-//   },
-// }
