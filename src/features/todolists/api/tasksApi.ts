@@ -17,7 +17,7 @@ export const tasksApi = baseApi.injectEndpoints({
                 params: {...params, count: TASK_COUNT}
             }),
             providesTags: (_result, _error, arg) => {
-                return [{type: 'Tasks', id: arg.id}]
+                return [{type: 'Tasks' as const, id: arg.id}]
             }
         }),
         createTask: build.mutation<BaseResponse, { todolistId: string; title: string }>({
@@ -26,7 +26,7 @@ export const tasksApi = baseApi.injectEndpoints({
                 url: `/todo-lists/${todolistId}/tasks`,
                 body: {title}
             }),
-            invalidatesTags: (_result, _error, {todolistId}) => [{type: 'Tasks', id: todolistId}]
+            invalidatesTags: (_result, _error, {todolistId}) => [{type: 'Tasks' as const, id: todolistId}]
         }),
         updateTask: build.mutation<BaseResponse, { todolistId: string; taskId: string; model: UpdateTaskModel }>({
             query: ({todolistId, taskId, model}) => ({
@@ -35,15 +35,14 @@ export const tasksApi = baseApi.injectEndpoints({
                 body: model
             }),
             onQueryStarted: async ({todolistId, taskId, model}, {dispatch, queryFulfilled, getState}) => {
-                const args = tasksApi.util?.selectCachedArgsForQuery(getState(), 'getTasks')
+                const args = tasksApi.util.selectCachedArgsForQuery(getState(), 'getTasks')
 
                 let patchResults: PatchCollection[] = []
-                args.forEach((arg) => {
+                args.forEach((arg: { id: string; params: { page: number } }) => {
+                    if (arg.id !== todolistId) return
+
                     patchResults.push(dispatch(
-                        tasksApi.util.updateQueryData('getTasks', {
-                            id: todolistId,
-                            params: {page: arg.params.page}
-                        }, (response) => {
+                        tasksApi.util.updateQueryData('getTasks', arg, (response: GetTasksResponse) => {
                             const index = response.items.findIndex((todo) => todo.id === taskId)
                             if (index !== -1) {
                                 response.items[index] = {...response.items[index], ...model}
@@ -60,7 +59,7 @@ export const tasksApi = baseApi.injectEndpoints({
                 }
             },
             invalidatesTags: (_result, _error, {todolistId}) => {
-                return [{type: 'Tasks', id: todolistId}]
+                return [{type: 'Tasks' as const, id: todolistId}]
             }
         }),
         deleteTask: build.mutation<BaseResponse, { todolistId: string; taskId: string }>({
@@ -69,7 +68,7 @@ export const tasksApi = baseApi.injectEndpoints({
                 url: `/todo-lists/${todolistId}/tasks/${taskId}`,
             }),
             invalidatesTags: (_result, _error, {todolistId}) => {
-                return [{type: 'Tasks', id: todolistId}]
+                return [{type: 'Tasks' as const, id: todolistId}]
             }
         })
 

@@ -95,6 +95,7 @@ export const Login = () => {
                         <TextField
                             type={showPassword ? "text" : "password"}
                             label="Password"
+                            variant="outlined"
                             margin="normal"
                             error={!!errors.password}
                             {...register("password")}
